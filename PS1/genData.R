@@ -10,7 +10,7 @@
 library(mvtnorm)
 library(ggplot2)
 
-#function to save as csv and pdf
+#function to save plot
 plot.pdf <- function(Df){
   pdf("dataPlot.pdf", width=4, height=4.5)
   plot <- ggplot(data = Df, 

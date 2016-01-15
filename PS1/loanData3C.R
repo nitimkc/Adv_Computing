@@ -1,3 +1,15 @@
+################################################################################
+# Barcelona Graduate School of Economics
+# Master's Degree in Data Science
+################################################################################
+# Course : Advanced Computing
+# Title  : Problem Set #1
+# Date   : 2016.01.14
+################################################################################
+
+library(mvtnorm)
+library(ggplot2)
+
 ## create small wrapper functions
 sigmaXY <- function(rho, sdX, sdY) { 
   covTerm <- rho * sdX * sdY
@@ -22,11 +34,11 @@ loanData <- function(noApproved, noDenied, noUndecided, muApproved, muDenied, mu
   denied <- genBVN(noDenied, muDenied, sigmaDenied, seed = seed+1)
   undecided <- genBVN(noUndecided, muUndecided, sigmaUndecided, seed = seed+2)
   loanDf <- as.data.frame(rbind(approved,denied, undecided))
-  deny <- c(rep("Approved", noApproved), rep("Denied", noDenied), rep("Undecided", noUndecided))
+  Deny <- c(rep("Approved", noApproved), rep("Denied", noDenied), rep("Undecided", noUndecided))
   target1 = c(rep(1, noApproved), rep(0, noDenied), rep(0, noUndecided))
   target2 = c(rep(0, noApproved), rep(1, noDenied), rep(0, noUndecided))
   target3 = c(rep(0, noApproved), rep(0, noDenied), rep(1, noUndecided))
-  loanDf <- data.frame(loanDf, deny, target1, target2, target3)
+  loanDf <- data.frame(loanDf, Deny, target1, target2, target3)
   colnames(loanDf) <- c("PIratio", "solvency", "Deny", "Target1", "Target2", "Target3")
   return(loanDf)
 }
@@ -34,18 +46,6 @@ loanData <- function(noApproved, noDenied, noUndecided, muApproved, muDenied, mu
 # generating some data
 loanDf <- loanData(noApproved=50, noDenied=50, noUndecided=25, c(4, 150), c(10, 100), c(10, 100),
                    c(1,20), c(2,30), c(2,30), -0.1, 0.6, 0.4, 1221)
-head(loanDf)
-
-# illustrating the data, note that with ggplot we need to additionally
-# specify font family
-library(ggplot2)
-ggplot(data = loanDf,
-       aes(x = solvency, y = PIratio, colour=Deny, fill=Deny)) +
-  geom_point() +
-  xlab("solvency") +
-  ylab("PIratio") +
-  theme_bw() +
-  theme(text=element_text(family="Arial"))
 
 #now run 3 regressions to obtain boundary lines
 reg1 <- lm(Target1 ~ solvency + PIratio + 1, data=loanDf)
@@ -81,8 +81,11 @@ y2.3 <- ((coeff3[1] - coeff2[1])/(coeff2[2] - coeff3[2]))* x + ((bias3 - bias2)/
 BDf2.3 <- data.frame(solvency=x, PIratio=y2.3,
                      Deny=rep("Boundary Deny/Undcd", length(x)))
 
-# plotting
-ggplot(data = loanDf, aes(x = solvency, y = PIratio,
+#function to save as csv and pdf
+  write.csv(loanDf, file ="predictions.csv")
+
+  pdf("discFunction3C.pdf", width=8, height=4.5)
+  ggplot(data = loanDf, aes(x = solvency, y = PIratio,
                           colour=Deny, fill=Deny)) +
   geom_point() +
   xlab("solvency") +
@@ -91,7 +94,7 @@ ggplot(data = loanDf, aes(x = solvency, y = PIratio,
   geom_line(data=BDf1.2) +
   geom_line(data=BDf1.3) +
   geom_line(data=BDf2.3) 
-  #scale_color_manual("deny",
-                     values = c("Boundary App/Deny" = "black", "Boundary App/Undcd" = "grey", "Boundary Deny/Undcd" = "magenta"
-                                "Target1" = "blue", "Target2" = "red", "Target3" = "orange"))
+  dev.off()
+
+
 
