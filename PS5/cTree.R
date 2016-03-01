@@ -207,7 +207,7 @@ cTree <- function(formula, data, depth, minPoints = 1, costFnc = "Entropy") {
             
             # left
             left <- which(X[ ,featIndex] < threshold)
-            leftres <- recursione(K=k, X=X[left, ], y=y[left], depth=(depth+1),
+            leftres <- recursion(K=k, X=X[left, ], y=y[left], depth=(depth+1),
                                      minPoints=mp, costFnc)
             
             # terminate recursion if no split point
@@ -218,7 +218,7 @@ cTree <- function(formula, data, depth, minPoints = 1, costFnc = "Entropy") {
             
             # right
             right <- which(X[,featindex]>=threshold)
-            rightres <- recursivetree(K=k, X=X[right,], y=y[right], depth=(depth+1),
+            rightres <- recursion(K=k, X=X[right,], y=y[right], depth=(depth+1),
                                       minPoints=mp, costFnc)
             
             # terminate recursion if no split point
@@ -233,7 +233,7 @@ cTree <- function(formula, data, depth, minPoints = 1, costFnc = "Entropy") {
       }
     }
     
-    result <- recursione(K=maxdepth, X=x, Y=y, depth=1, minPoints=minPoints, costFnc)
+    result <- recursion(K=maxdepth, X=x, Y=y, depth=1, minPoints=minPoints, costFnc)
     predLabels <- result$labels
     prob <- result$prob
     
